@@ -1,0 +1,77 @@
+[project]
+name = "apple-fm-serve"
+version = "0.1.0"
+description = "OpenAI-compatible local server for Apple Foundation Models"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.116.0,<1.0.0",
+  "pydantic>=2.11.0,<3.0.0",
+  "pydantic-settings>=2.11.0,<3.0.0",
+  "sse-starlette>=2.3.6,<3.0.0",
+  "uvicorn[standard]>=0.35.0,<1.0.0",
+]
+
+[project.optional-dependencies]
+apple = [
+  "apple-fm-sdk @ git+https://github.com/apple/python-apple-fm-sdk.git",
+]
+dev = [
+  "httpx>=0.28.1,<1.0.0",
+  "mypy>=1.18.0,<2.0.0",
+  "pytest>=8.4.0,<9.0.0",
+  "pytest-asyncio>=1.2.0,<2.0.0",
+  "ruff>=0.13.0,<1.0.0",
+]
+
+[project.scripts]
+apple-fm-serve = "apple_fm_serve.main:run"
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "CPY001",
+  "COM812",
+  "D",
+  "EM101",
+  "EM102",
+  "TRY003",
+  "C901",
+  "PLR0915",
+  "N802",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "PLR2004"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+plugins = []
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["sse_starlette.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["apple_fm_sdk"]
+ignore_missing_imports = true
