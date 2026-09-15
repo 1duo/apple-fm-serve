@@ -1,22 +1,19 @@
-.PHONY: sync fmt lint typecheck test check run
+.PHONY: build verify test check run clean
 
-sync:
-	uv sync --extra dev --extra apple
+build:
+	swift build
 
-fmt:
-	uv run --extra dev ruff format src tests
-	uv run --extra dev ruff check --fix src tests
+verify:
+	swift run apple-fm-verify
 
-lint:
-	uv run --extra dev ruff check src tests
+# `swift test` needs full Xcode (XCTest). With CommandLineTools only,
+# `make verify` runs the same checks via the apple-fm-verify executable.
+test: verify
 
-typecheck:
-	uv run --extra dev mypy src tests
-
-test:
-	uv run --extra dev pytest
-
-check: lint typecheck test
+check: build verify
 
 run:
 	./serve
+
+clean:
+	rm -rf .build

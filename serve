@@ -3,9 +3,12 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if ! command -v uv >/dev/null 2>&1; then
-  echo "uv is required but was not found in PATH." >&2
+if ! command -v swift >/dev/null 2>&1; then
+  echo "swift is required but was not found in PATH." >&2
+  echo "Install Xcode or the Command Line Tools: xcode-select --install" >&2
   exit 1
 fi
 
-exec uv run --project "$ROOT_DIR" --extra apple uvicorn --app-dir "$ROOT_DIR/src" apple_fm_serve.main:app "$@"
+export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-14.0}"
+swift build --package-path "$ROOT_DIR"
+exec "$ROOT_DIR/.build/debug/apple-fm-serve" "$@"
